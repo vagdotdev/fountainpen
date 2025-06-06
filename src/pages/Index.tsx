@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MicButton from '../components/MicButton';
 import RecordingCard from '../components/RecordingCard';
@@ -47,7 +46,7 @@ const Index = () => {
       summary: currentSummary,
       transcript: currentTranscript,
       createdAt: new Date(),
-      folder: 'all'
+      folder: 'home'
     };
     
     setNotes(prev => [newNote, ...prev]);
