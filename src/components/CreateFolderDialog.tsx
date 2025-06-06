@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { X, Folder, Home, Briefcase, User, Gamepad2, Heart, Star } from 'lucide-react';
+import { X, Folder, Home, Users, Building, Brain, Heart, Star } from 'lucide-react';
 
 interface CreateFolderDialogProps {
   isOpen: boolean;
@@ -15,9 +15,9 @@ const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDia
   const iconOptions = [
     { id: 'folder', icon: Folder, name: 'Folder' },
     { id: 'home', icon: Home, name: 'Home' },
-    { id: 'briefcase', icon: Briefcase, name: 'Work' },
-    { id: 'user', icon: User, name: 'Personal' },
-    { id: 'gamepad', icon: Gamepad2, name: 'Games' },
+    { id: 'users', icon: Users, name: 'Users' },
+    { id: 'building', icon: Building, name: 'Building' },
+    { id: 'brain', icon: Brain, name: 'Brain' },
     { id: 'heart', icon: Heart, name: 'Favorites' },
     { id: 'star', icon: Star, name: 'Important' },
   ];

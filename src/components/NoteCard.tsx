@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MoreVertical, Trash2, Copy, FileText } from 'lucide-react';
+import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { Note, Folder } from '../types/Note';
 
 interface NoteCardProps {
@@ -14,6 +14,7 @@ interface NoteCardProps {
 const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: NoteCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showMoveMenu, setShowMoveMenu] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(note.summary);
@@ -32,6 +33,15 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: Note
     setShowMenu(false);
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    onDragStart(e, note.id);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -43,13 +53,14 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: Note
     <div className="relative group">
       <div
         draggable
-        onDragStart={(e) => onDragStart(e, note.id)}
-        className="flex flex-col items-center cursor-move hover:scale-105 transition-transform duration-200"
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className={`flex flex-col items-center cursor-move hover:scale-105 transition-all duration-200 ${
+          isDragging ? 'opacity-50' : ''
+        }`}
       >
-        {/* App-like Icon */}
+        {/* App-like Icon - Original Design Restored */}
         <div className="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center mb-2 group-hover:shadow-xl transition-shadow">
-          <FileText className="w-8 h-8 text-white" />
-          
           {/* Menu Button */}
           <button
             onClick={() => setShowMenu(!showMenu)}
@@ -86,7 +97,6 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: Note
             onClick={() => setShowMoveMenu(!showMoveMenu)}
             className="flex items-center gap-2 w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-50"
           >
-            <FileText className="w-4 h-4" />
             Move to folder
           </button>
           <button

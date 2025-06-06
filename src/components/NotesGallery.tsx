@@ -17,9 +17,9 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [folders, setFolders] = useState<FolderType[]>([
     { id: 'home', name: 'Home', icon: 'home' },
-    { id: 'work', name: 'Work', icon: 'briefcase' },
-    { id: 'personal', name: 'Personal', icon: 'user' },
-    { id: 'play', name: 'Play', icon: 'gamepad' }
+    { id: 'walkins', name: 'Walkins', icon: 'users' },
+    { id: 'ycp', name: 'YCP', icon: 'building' },
+    { id: 'think', name: 'Think', icon: 'brain' }
   ]);
 
   const filteredNotes = notes.filter(note => note.folder === selectedFolder);
@@ -36,6 +36,11 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
 
   const handleDragStart = (e: React.DragEvent, noteId: string) => {
     e.dataTransfer.setData('text/plain', noteId);
+  };
+
+  const handleDropNote = (noteId: string, folderId: string) => {
+    handleMoveToFolder(noteId, folderId);
+    console.log(`Note ${noteId} moved to folder ${folderId}`);
   };
 
   const handleCreateFolder = (name: string, icon: string) => {
@@ -100,6 +105,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         selectedFolder={selectedFolder}
         onFolderSelect={setSelectedFolder}
         onCreateFolder={() => setShowCreateDialog(true)}
+        onDropNote={handleDropNote}
       />
 
       {/* Create Folder Dialog */}
