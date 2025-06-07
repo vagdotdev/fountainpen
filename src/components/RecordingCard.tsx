@@ -30,9 +30,20 @@ const RecordingCard = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedSummary, setEditedSummary] = useState(summary);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setIsAnimating(true);
+    
+    // Start the flip animation
+    setTimeout(() => {
+      setIsFlipped(!isFlipped);
+    }, 350); // Mid-point of the animation
+    
+    // End animation state
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700); // Full duration of flip
   };
 
   const handleEdit = () => {
@@ -80,26 +91,30 @@ const RecordingCard = ({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="relative max-w-2xl w-full">
-        <div className={`transform transition-transform duration-700 ${isFlipped ? 'rotate-y-180' : ''}`}>
+        <div 
+          className={`transform transition-transform duration-700 ${isFlipped ? 'rotate-y-180' : ''}`}
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           {!isFlipped ? (
             // Front side - Summary view
-            <div className="bg-white rounded-2xl p-8 shadow-2xl animate-scale-in">
+            <div className="bg-white rounded-2xl p-8 shadow-2xl animate-scale-in min-h-[600px] flex flex-col" style={{ backfaceVisibility: 'hidden' }}>
               <div className="flex items-start justify-between mb-6">
                 <button
                   onClick={handleFlip}
-                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                  className={`flex items-center gap-2 p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
                 >
                   <RotateCcw className="w-5 h-5" />
+                  <span className="text-sm font-medium">Transcript</span>
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                  className={`p-2 text-slate-400 hover:text-slate-600 transition-colors ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="mb-6">
+              <div className={`mb-6 transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
                 <input
                   type="text"
                   value={title}
@@ -109,16 +124,16 @@ const RecordingCard = ({
                 />
               </div>
 
-              <div className="mb-8">
+              <div className={`mb-8 flex-1 flex flex-col transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
                 {isEditing ? (
-                  <div>
+                  <div className="flex-1 flex flex-col">
                     <textarea
                       value={editedSummary}
                       onChange={(e) => setEditedSummary(e.target.value)}
-                      className="w-full h-32 p-3 border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full flex-1 min-h-[300px] p-4 border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg leading-relaxed"
                       placeholder="Edit your summary..."
                     />
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-2 mt-4">
                       <button
                         onClick={handleSaveEdit}
                         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -134,11 +149,15 @@ const RecordingCard = ({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-slate-700 text-lg leading-relaxed">{summary}</p>
+                  <div className="flex-1 flex flex-col">
+                    <div className="flex-1 overflow-y-auto">
+                      <p className="text-slate-700 text-lg leading-relaxed">{summary}</p>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              <div className="flex justify-between">
+              <div className={`flex justify-between transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
                 <button
                   onClick={handleCopySummary}
                   className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors"
@@ -157,29 +176,32 @@ const RecordingCard = ({
             </div>
           ) : (
             // Back side - Transcript view
-            <div className="bg-white rounded-2xl p-8 shadow-2xl rotate-y-180">
+            <div className="bg-white rounded-2xl p-8 shadow-2xl rotate-y-180 min-h-[600px] flex flex-col" style={{ backfaceVisibility: 'hidden' }}>
               <div className="flex items-start justify-between mb-6">
                 <button
                   onClick={handleFlip}
-                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                  className={`flex items-center gap-2 p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
                 >
                   <RotateCcw className="w-5 h-5" />
+                  <span className="text-sm font-medium">Summary</span>
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                  className={`p-2 text-slate-400 hover:text-slate-600 transition-colors ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <h3 className="text-2xl font-bold text-slate-800 mb-6">Full Transcript</h3>
+              <h3 className={`text-2xl font-bold text-slate-800 mb-6 transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+                Full Transcript
+              </h3>
 
-              <div className="mb-8 max-h-64 overflow-y-auto">
-                <p className="text-slate-700 leading-relaxed">{transcript}</p>
+              <div className={`mb-8 flex-1 overflow-y-auto transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+                <p className="text-slate-700 leading-relaxed text-lg">{transcript}</p>
               </div>
 
-              <div className="flex justify-between">
+              <div className={`flex justify-between transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
                 <button
                   onClick={handleCopyTranscript}
                   className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors"
