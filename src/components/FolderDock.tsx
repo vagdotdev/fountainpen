@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { Plus, Home, Users, Building, Brain } from 'lucide-react';
-import { Folder } from '../types/Note';
+import { Plus, Folder, Users } from 'lucide-react';
+import { Folder as FolderType } from '../types/Note';
 
 interface FolderDockProps {
-  folders: Folder[];
+  folders: FolderType[];
   selectedFolder: string;
   onFolderSelect: (folderId: string) => void;
   onCreateFolder: () => void;
@@ -14,19 +14,11 @@ interface FolderDockProps {
 const FolderDock = ({ folders, selectedFolder, onFolderSelect, onCreateFolder, onDropNote }: FolderDockProps) => {
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
 
-  const getFolderIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'home':
-        return <Home className="w-6 h-6" />;
-      case 'users':
-        return <Users className="w-6 h-6" />;
-      case 'building':
-        return <Building className="w-6 h-6" />;
-      case 'brain':
-        return <Brain className="w-6 h-6" />;
-      default:
-        return <Home className="w-6 h-6" />;
+  const getFolderIcon = (type: string) => {
+    if (type === 'shared') {
+      return <Users className="w-6 h-6" />;
     }
+    return <Folder className="w-6 h-6" />;
   };
 
   const handleDragOver = (e: React.DragEvent, folderId: string) => {
@@ -67,7 +59,7 @@ const FolderDock = ({ folders, selectedFolder, onFolderSelect, onCreateFolder, o
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {getFolderIcon(folder.icon)}
+              {getFolderIcon(folder.type || 'folder')}
               <span className="text-xs font-medium truncate max-w-16">{folder.name}</span>
             </button>
           ))}

@@ -9,9 +9,10 @@ interface NoteCardProps {
   onDelete: (noteId: string) => void;
   onMoveToFolder: (noteId: string, folderId: string) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
+  onNoteClick: (note: Note) => void;
 }
 
-const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: NoteCardProps) => {
+const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick }: NoteCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showMoveMenu, setShowMoveMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -42,6 +43,10 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: Note
     setIsDragging(false);
   };
 
+  const handleClick = () => {
+    onNoteClick(note);
+  };
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -55,7 +60,8 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: Note
         draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        className={`flex flex-col items-center cursor-move hover:scale-105 transition-all duration-200 ${
+        onClick={handleClick}
+        className={`flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200 ${
           isDragging ? 'opacity-50' : ''
         }`}
       >
@@ -63,7 +69,10 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart }: Note
         <div className="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center mb-2 group-hover:shadow-xl transition-shadow">
           {/* Menu Button */}
           <button
-            onClick={() => setShowMenu(!showMenu)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMenu(!showMenu);
+            }}
             className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
           >
             <MoreVertical className="w-3 h-3 text-slate-600" />

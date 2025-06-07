@@ -4,6 +4,7 @@ import { Mic, FileText } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
+import RecordingCard from './RecordingCard';
 import { Note, Folder as FolderType } from '../types/Note';
 
 interface NotesGalleryProps {
@@ -15,11 +16,12 @@ interface NotesGalleryProps {
 const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) => {
   const [selectedFolder, setSelectedFolder] = useState('home');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [folders, setFolders] = useState<FolderType[]>([
-    { id: 'home', name: 'Home', icon: 'home' },
-    { id: 'walkins', name: 'Walkins', icon: 'users' },
-    { id: 'ycp', name: 'YCP', icon: 'building' },
-    { id: 'think', name: 'Think', icon: 'brain' }
+    { id: 'home', name: 'Home', type: 'folder' },
+    { id: 'walkins', name: 'Walkins', type: 'folder' },
+    { id: 'ycp', name: 'YCP', type: 'folder' },
+    { id: 'think', name: 'Think', type: 'folder' }
   ]);
 
   const filteredNotes = notes.filter(note => note.folder === selectedFolder);
@@ -43,14 +45,36 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
     console.log(`Note ${noteId} moved to folder ${folderId}`);
   };
 
-  const handleCreateFolder = (name: string, icon: string) => {
+  const handleCreateFolder = (name: string, type: string) => {
     const newFolder: FolderType = {
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
-      icon,
+      type,
       isCustom: true
     };
     setFolders(prev => [...prev, newFolder]);
+  };
+
+  const handleNoteClick = (note: Note) => {
+    setSelectedNote(note);
+  };
+
+  const handleCloseNoteView = () => {
+    setSelectedNote(null);
+  };
+
+  const handleSaveNote = () => {
+    if (selectedNote) {
+      setNotes(prev => prev.map(note => 
+        note.id === selectedNote.id ? selectedNote : note
+      ));
+      setSelectedNote(null);
+    }
+  };
+
+  const handleCopyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    console.log('Copied to clipboard!');
   };
 
   return (
@@ -81,6 +105,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
                 onDelete={handleDeleteNote}
                 onMoveToFolder={handleMoveToFolder}
                 onDragStart={handleDragStart}
+                onNoteClick={handleNoteClick}
               />
             ))}
           </div>
@@ -114,6 +139,22 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         onClose={() => setShowCreateDialog(false)}
         onCreateFolder={handleCreateFolder}
       />
+
+      {/* Note View */}
+      {selectedNote && (
+        <RecordingCard
+          isRecording={false}
+          isTranscribing={false}
+          transcript={selectedNote.transcript}
+          summary={selectedNote.summary}
+          title={selectedNote.title}
+          onSave={handleSaveNote}
+          onClose={handleCloseNoteView}
+          onCopy={handleCopyToClipboard}
+          setTitle={(title) => setSelectedNote(prev => prev ? {...prev, title} : null)}
+          setSummary={(summary) => setSelectedNote(prev => prev ? {...prev, summary} : null)}
+        />
+      )}
     </div>
   );
 };

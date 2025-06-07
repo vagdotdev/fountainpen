@@ -1,33 +1,28 @@
 
 import React, { useState } from 'react';
-import { X, Folder, Home, Users, Building, Brain, Heart, Star } from 'lucide-react';
+import { X, Folder, Users } from 'lucide-react';
 
 interface CreateFolderDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateFolder: (name: string, icon: string) => void;
+  onCreateFolder: (name: string, type: string) => void;
 }
 
 const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('folder');
+  const [selectedType, setSelectedType] = useState('folder');
 
-  const iconOptions = [
-    { id: 'folder', icon: Folder, name: 'Folder' },
-    { id: 'home', icon: Home, name: 'Home' },
-    { id: 'users', icon: Users, name: 'Users' },
-    { id: 'building', icon: Building, name: 'Building' },
-    { id: 'brain', icon: Brain, name: 'Brain' },
-    { id: 'heart', icon: Heart, name: 'Favorites' },
-    { id: 'star', icon: Star, name: 'Important' },
+  const folderTypes = [
+    { id: 'folder', icon: Folder, name: 'Folder', description: 'Regular folder' },
+    { id: 'shared', icon: Users, name: 'Shared Folder', description: 'Shared with others' },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (folderName.trim()) {
-      onCreateFolder(folderName.trim(), selectedIcon);
+      onCreateFolder(folderName.trim(), selectedType);
       setFolderName('');
-      setSelectedIcon('folder');
+      setSelectedType('folder');
       onClose();
     }
   };
@@ -64,24 +59,29 @@ const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDia
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Choose Icon
+              Folder Type
             </label>
-            <div className="grid grid-cols-4 gap-2">
-              {iconOptions.map((option) => {
-                const IconComponent = option.icon;
+            <div className="space-y-2">
+              {folderTypes.map((type) => {
+                const IconComponent = type.icon;
                 return (
                   <button
-                    key={option.id}
+                    key={type.id}
                     type="button"
-                    onClick={() => setSelectedIcon(option.id)}
-                    className={`flex flex-col items-center gap-1 p-3 rounded-lg transition-colors ${
-                      selectedIcon === option.id
+                    onClick={() => setSelectedType(type.id)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
+                      selectedType === type.id
                         ? 'bg-blue-500 text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
                     <IconComponent className="w-5 h-5" />
-                    <span className="text-xs">{option.name}</span>
+                    <div>
+                      <div className="font-medium">{type.name}</div>
+                      <div className={`text-sm ${selectedType === type.id ? 'text-blue-100' : 'text-slate-500'}`}>
+                        {type.description}
+                      </div>
+                    </div>
                   </button>
                 );
               })}
