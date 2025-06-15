@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { format } from 'date-fns';
@@ -66,18 +65,38 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         className={cn(
-          'bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-lg transition-all duration-200 h-64 flex flex-col',
+          'bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-lg transition-all duration-200 h-64 flex flex-col relative overflow-hidden',
           isDragging && 'opacity-50',
           {
             'border-slate-200': !isSelected,
             'border-black ring-2 ring-black/10': isSelected,
             'animate-merge-out': isMerging && isSelected,
-            'animate-calm-glow': isNewlyMerged,
           }
         )}
+        style={isNewlyMerged ? {
+          '--gradient-angle': '0deg',
+          background: 'white',
+          border: '2px solid transparent',
+          backgroundClip: 'padding-box',
+        } : {}}
       >
+        {/* Animated border for newly merged supernotes */}
+        {isNewlyMerged && (
+          <div 
+            className="absolute inset-0 rounded-2xl animate-trace-border"
+            style={{
+              background: `conic-gradient(from var(--gradient-angle), #FFB284, #E59A6D, #FFB284, #E59A6D, #FFB284)`,
+              padding: '2px',
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'xor',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+            }}
+          />
+        )}
+
         {/* Header */}
-        <div onClick={handleViewNote} className="flex items-start justify-between mb-4">
+        <div onClick={handleViewNote} className="flex items-start justify-between mb-4 relative z-10">
           <h3 className="text-sm font-semibold text-slate-800 line-clamp-3 leading-tight pr-2 flex-1">
             {note.title}
           </h3>
@@ -93,14 +112,14 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
         </div>
 
         {/* Content */}
-        <div onClick={handleViewNote} className="flex-1 mb-4">
+        <div onClick={handleViewNote} className="flex-1 mb-4 relative z-10">
           <p className="text-xs text-slate-600 line-clamp-6 leading-relaxed">
             {note.summary}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center justify-between mt-auto relative z-10">
           <span className="text-xs text-slate-400 font-times">
             {formatDate(note.createdAt)}
           </span>
@@ -108,7 +127,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
       </div>
 
       {/* Selection Indicator */}
-      <div className="absolute bottom-4 right-4 pointer-events-none">
+      <div className="absolute bottom-4 right-4 pointer-events-none z-20">
         {isSelected ? (
           <div className="w-6 h-6 flex items-center justify-center rounded-full bg-black text-white border-2 border-white shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -120,7 +139,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
 
       {/* Context Menu */}
       {showMenu && (
-        <div className="absolute top-10 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[160px]">
+        <div className="absolute top-10 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-30 min-w-[160px]">
           <button
             onClick={handleCopy}
             className="flex items-center gap-2 w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-50 first:rounded-t-lg"
@@ -146,7 +165,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
 
       {/* Move Menu */}
       {showMoveMenu && (
-        <div className="absolute top-28 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-20 min-w-[140px]">
+        <div className="absolute top-28 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-40 min-w-[140px]">
           {folders.filter(f => f.id !== note.folder).map((folder) => (
             <button
               key={folder.id}
