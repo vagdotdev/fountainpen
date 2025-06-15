@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Mic, FileText, Trash2, X, Undo, Sparkles } from 'lucide-react';
 import NoteCard from './NoteCard';
@@ -27,7 +28,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   ]);
   const [deletedFolder, setDeletedFolder] = useState<FolderType | null>(null);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
-  const [mergedNotesInfo, setMergedNotesInfo<{ superNote: Note, originalNotes: Note[] } | null>(null);
+  const [mergedNotesInfo, setMergedNotesInfo] = useState<{ superNote: Note, originalNotes: Note[] } | null>(null);
   const [isMerging, setIsMerging] = useState(false);
   const { toast } = useToast();
 
