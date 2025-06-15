@@ -3,7 +3,7 @@ import { Mic, FileText, Trash2, X } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
-import RecordingCard from './RecordingCard';
+import NoteView from './NoteView';
 import { Note, Folder as FolderType } from '../types/Note';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -156,18 +156,12 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
     setSelectedNote(null);
   };
 
-  const handleSaveNote = () => {
-    if (selectedNote) {
-      setNotes(prev => prev.map(note => 
-        note.id === selectedNote.id ? selectedNote : note
-      ));
-      setSelectedNote(null);
-    }
-  };
-
-  const handleCopyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    console.log('Copied to clipboard!');
+  const handleSaveNote = (updatedNote: Note) => {
+    setNotes(prev => prev.map(note => 
+      note.id === updatedNote.id ? updatedNote : note
+    ));
+    setSelectedNote(null);
+    toast({ title: "Note saved!" });
   };
 
   return (
@@ -189,7 +183,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
       {/* Notes Grid - Kanban Style */}
       <div className="px-6 pb-40">
         {filteredNotes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 animate-scale-in" key={selectedFolder}>
             {filteredNotes.map((note) => (
               <NoteCard
                 key={note.id}
@@ -265,17 +259,10 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
 
       {/* Note View */}
       {selectedNote && (
-        <RecordingCard
-          isRecording={false}
-          isTranscribing={false}
-          transcript={selectedNote.transcript}
-          summary={selectedNote.summary}
-          title={selectedNote.title}
+        <NoteView
+          initialNote={selectedNote}
           onSave={handleSaveNote}
           onClose={handleCloseNoteView}
-          onCopy={handleCopyToClipboard}
-          setTitle={(title) => setSelectedNote(prev => prev ? {...prev, title} : null)}
-          setSummary={(summary) => setSelectedNote(prev => prev ? {...prev, summary} : null)}
         />
       )}
     </div>

@@ -91,7 +91,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-auto">
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-400 font-times">
             {formatDate(note.createdAt)}
           </span>
         </div>
