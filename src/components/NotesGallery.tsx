@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Mic, FileText, Trash2, X, Undo, Neuron } from 'lucide-react';
+import { Mic, FileText, Trash2, X, Undo, Sparkles } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
@@ -286,10 +286,10 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
             {selectedNotes.length > 1 && (
                <Button
                 size="sm"
-                className="rounded-full bg-gradient-to-r from-orange-200 via-[#FFB284] to-orange-300 text-slate-800 font-bold bg-[length:200%_auto] animate-shine animate-pulse-shadow"
+                className="bg-gradient-to-r from-orange-400 to-orange-500 text-white hover:from-orange-500 hover:to-orange-600 transition-colors rounded-full"
                 onClick={handleSuperNote}
               >
-                <Neuron className="w-4 h-4 mr-1" />
+                <Sparkles className="w-4 h-4 mr-1" />
                 Super Note
               </Button>
             )}
