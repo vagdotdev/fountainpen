@@ -64,21 +64,32 @@ const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDia
             <div className="space-y-2">
               {folderTypes.map((type) => {
                 const IconComponent = type.icon;
+                const isSelected = selectedType === type.id;
+                const isShared = type.id === 'shared';
+                
                 return (
                   <button
                     key={type.id}
                     type="button"
                     onClick={() => setSelectedType(type.id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
-                      selectedType === type.id
-                        ? 'bg-blue-500 text-white'
+                      isSelected
+                        ? isShared
+                          ? 'bg-green-500 text-white'
+                          : 'bg-blue-500 text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
                     <IconComponent className="w-5 h-5" />
                     <div>
                       <div className="font-medium">{type.name}</div>
-                      <div className={`text-sm ${selectedType === type.id ? 'text-blue-100' : 'text-slate-500'}`}>
+                      <div className={`text-sm ${
+                        isSelected 
+                          ? isShared 
+                            ? 'text-green-100' 
+                            : 'text-blue-100'
+                          : 'text-slate-500'
+                      }`}>
                         {type.description}
                       </div>
                     </div>

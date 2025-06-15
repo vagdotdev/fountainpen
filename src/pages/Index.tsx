@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+import { Eye } from 'lucide-react';
 import MicButton from '../components/MicButton';
 import RecordingCard from '../components/RecordingCard';
 import NotesGallery from '../components/NotesGallery';
@@ -8,6 +10,7 @@ const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [showRecordingCard, setShowRecordingCard] = useState(false);
+  const [showNotesGallery, setShowNotesGallery] = useState(false);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [currentSummary, setCurrentSummary] = useState('');
   const [currentTitle, setCurrentTitle] = useState('');
@@ -71,22 +74,38 @@ const Index = () => {
     console.log('Copied to clipboard!');
   };
 
+  const handleViewNotes = () => {
+    setShowNotesGallery(true);
+  };
+
+  const handleBackToHome = () => {
+    setShowNotesGallery(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
       {/* Main Content */}
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        {!showRecordingCard && notes.length === 0 && (
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-slate-800 mb-4">Voice Notes</h1>
-            <p className="text-xl text-slate-600">Tap the mic to start recording your thoughts</p>
-          </div>
+        {!showRecordingCard && !showNotesGallery && (
+          <>
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-slate-800 mb-4">Voice Notes</h1>
+              <p className="text-xl text-slate-600">Tap the mic to start recording your thoughts</p>
+            </div>
+            
+            <MicButton onStartRecording={handleStartRecording} />
+            
+            <button
+              onClick={handleViewNotes}
+              className="flex items-center gap-2 px-6 py-3 mt-8 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full transition-all duration-200 transform hover:scale-105"
+            >
+              <Eye className="w-4 h-4" />
+              View Notes
+            </button>
+          </>
         )}
         
-        {!showRecordingCard && (
-          <MicButton onStartRecording={handleStartRecording} />
-        )}
-        
-        {notes.length > 0 && !showRecordingCard && (
+        {showNotesGallery && !showRecordingCard && (
           <NotesGallery 
             notes={notes} 
             setNotes={setNotes}
