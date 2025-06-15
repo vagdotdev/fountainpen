@@ -261,7 +261,10 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
       {/* Undo Delete Notification */}
       {deletedNotes.length > 0 && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 animate-scale-in">
-          <div className="flex items-center gap-3 bg-slate-800 text-white shadow-xl rounded-full p-2 pl-2 pr-4 border border-slate-700">
+          <div className="flex items-center gap-3 bg-slate-800 text-white shadow-xl rounded-full p-2 pl-4 pr-2 border border-slate-700">
+            <span className="text-sm text-slate-300">
+              {deletedNotes.length > 1 ? `${deletedNotes.length} notes deleted` : 'note deleted'}
+            </span>
             <button
               onClick={handleUndoDeleteNotes}
               className="flex items-center gap-1.5 bg-slate-600 hover:bg-slate-500 rounded-full px-3 py-1 text-sm font-medium transition-colors"
@@ -269,9 +272,6 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
               <Undo className="w-3.5 h-3.5" />
               <span>undo</span>
             </button>
-            <span className="text-sm text-slate-300">
-              {deletedNotes.length > 1 ? `${deletedNotes.length} notes deleted` : 'note deleted'}
-            </span>
           </div>
         </div>
       )}
