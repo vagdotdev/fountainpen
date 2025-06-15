@@ -6,6 +6,7 @@ import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
 import RecordingCard from './RecordingCard';
 import { Note, Folder as FolderType } from '../types/Note';
+import { useToast } from '@/hooks/use-toast';
 
 interface NotesGalleryProps {
   notes: Note[];
@@ -14,15 +15,17 @@ interface NotesGalleryProps {
 }
 
 const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) => {
-  const [selectedFolder, setSelectedFolder] = useState('home');
+  const [selectedFolder, setSelectedFolder] = useState('library');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [folders, setFolders] = useState<FolderType[]>([
-    { id: 'home', name: 'Home', type: 'folder' },
+    { id: 'library', name: 'Library', type: 'folder' },
     { id: 'walkins', name: 'Walkins', type: 'folder' },
     { id: 'ycp', name: 'YCP', type: 'folder' },
     { id: 'think', name: 'Think', type: 'folder' }
   ]);
+  const [deletedFolder, setDeletedFolder] = useState<FolderType | null>(null);
+  const { toast } = useToast();
 
   const filteredNotes = notes.filter(note => note.folder === selectedFolder);
 
@@ -53,6 +56,68 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
       isCustom: true
     };
     setFolders(prev => [...prev, newFolder]);
+  };
+
+  const handleDeleteFolder = (folderId: string) => {
+    if (folderId === 'library') {
+      toast({
+        title: "Cannot delete Library",
+        description: "The Library folder cannot be deleted as it's the default folder.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const folderToDelete = folders.find(f => f.id === folderId);
+    if (!folderToDelete) return;
+
+    // Move all notes from deleted folder to library
+    const notesInFolder = notes.filter(note => note.folder === folderId);
+    setNotes(prev => prev.map(note => 
+      note.folder === folderId ? { ...note, folder: 'library' } : note
+    ));
+
+    // Remove folder
+    setFolders(prev => prev.filter(f => f.id !== folderId));
+    setDeletedFolder(folderToDelete);
+
+    // If currently viewing the deleted folder, switch to library
+    if (selectedFolder === folderId) {
+      setSelectedFolder('library');
+    }
+
+    // Show toast with undo option
+    toast({
+      title: `Deleted folder "${folderToDelete.name}"`,
+      description: `${notesInFolder.length} notes moved to Library`,
+      action: (
+        <button
+          onClick={handleUndoDelete}
+          className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+        >
+          Undo
+        </button>
+      )
+    });
+  };
+
+  const handleUndoDelete = () => {
+    if (!deletedFolder) return;
+
+    // Restore the folder
+    setFolders(prev => [...prev, deletedFolder]);
+    
+    // Move notes back to the restored folder
+    setNotes(prev => prev.map(note => 
+      note.folder === 'library' ? { ...note, folder: deletedFolder.id } : note
+    ));
+
+    setDeletedFolder(null);
+    
+    toast({
+      title: "Folder restored",
+      description: `"${deletedFolder.name}" has been restored with its notes.`
+    });
   };
 
   const handleNoteClick = (note: Note) => {
@@ -130,6 +195,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         selectedFolder={selectedFolder}
         onFolderSelect={setSelectedFolder}
         onCreateFolder={() => setShowCreateDialog(true)}
+        onDeleteFolder={handleDeleteFolder}
         onDropNote={handleDropNote}
       />
 
