@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Mic, FileText, Trash2, X, Undo } from 'lucide-react';
+import { Mic, FileText, Trash2, X, Undo, Sparkles } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
@@ -27,6 +28,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   ]);
   const [deletedFolder, setDeletedFolder] = useState<FolderType | null>(null);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
+  const [mergedNotesInfo, setMergedNotesInfo] = useState<{ superNote: Note, originalNotes: Note[] } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,6 +39,15 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
       return () => clearTimeout(timer);
     }
   }, [deletedNotes]);
+
+  useEffect(() => {
+    if (mergedNotesInfo) {
+      const timer = setTimeout(() => {
+        setMergedNotesInfo(null);
+      }, 5000); // 5 seconds to undo
+      return () => clearTimeout(timer);
+    }
+  }, [mergedNotesInfo]);
 
   const filteredNotes = notes.filter(note => note.folder === selectedFolder);
 
@@ -140,6 +151,41 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
     setDeletedNotes([]);
   };
 
+  const handleSuperNote = () => {
+    const notesToMerge = notes.filter(note => selectedNotes.includes(note.id));
+    if (notesToMerge.length < 2) return;
+
+    const newTitle = notesToMerge.map(n => n.title).join(' & ');
+    const newSummary = notesToMerge.map(n => n.summary).join('\n\n---\n\n');
+    const newTranscript = notesToMerge.map(n => n.transcript).join('\n\n---\n\n');
+
+    const superNote: Note = {
+      id: Date.now().toString(),
+      title: `Super Note: ${newTitle}`,
+      summary: newSummary,
+      transcript: newTranscript,
+      createdAt: new Date(),
+      folder: selectedFolder,
+    };
+
+    setNotes(prev => [superNote, ...prev.filter(note => !selectedNotes.includes(note.id))]);
+    setMergedNotesInfo({ superNote, originalNotes: notesToMerge });
+    setSelectedNotes([]);
+  };
+
+  const handleUndoSuperNote = () => {
+    if (!mergedNotesInfo) return;
+
+    const { superNote, originalNotes } = mergedNotesInfo;
+
+    setNotes(prev => [
+      ...originalNotes,
+      ...prev.filter(note => note.id !== superNote.id)
+    ]);
+
+    setMergedNotesInfo(null);
+  };
+
   const handleNoteClick = (note: Note) => {
     if (selectedNotes.length > 0) {
       return; // Do not open note when in selection mode
@@ -237,6 +283,16 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 animate-scale-in">
           <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm shadow-xl rounded-full p-2 border border-border">
             <span className="text-sm font-medium text-foreground px-3">{selectedNotes.length} selected</span>
+            {selectedNotes.length > 1 && (
+               <Button
+                size="sm"
+                className="bg-gradient-to-r from-orange-400 to-orange-500 text-white hover:from-orange-500 hover:to-orange-600 transition-colors rounded-full"
+                onClick={handleSuperNote}
+              >
+                <Sparkles className="w-4 h-4 mr-1" />
+                Super Note
+              </Button>
+            )}
             <Button
               size="sm"
               className="bg-slate-800 text-white hover:bg-slate-700 rounded-full"
@@ -267,6 +323,24 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
             </span>
             <button
               onClick={handleUndoDeleteNotes}
+              className="flex items-center gap-1.5 bg-slate-600 hover:bg-slate-500 rounded-full px-3 py-1 text-sm font-medium transition-colors"
+            >
+              <Undo className="w-3.5 h-3.5" />
+              <span>undo</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Undo Merge Notification */}
+      {mergedNotesInfo && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 animate-scale-in">
+          <div className="flex items-center gap-3 bg-slate-800 text-white shadow-xl rounded-full p-2 pl-4 pr-2 border border-slate-700">
+            <span className="text-sm text-slate-300">
+              {`${mergedNotesInfo.originalNotes.length} notes merged`}
+            </span>
+            <button
+              onClick={handleUndoSuperNote}
               className="flex items-center gap-1.5 bg-slate-600 hover:bg-slate-500 rounded-full px-3 py-1 text-sm font-medium transition-colors"
             >
               <Undo className="w-3.5 h-3.5" />
