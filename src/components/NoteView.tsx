@@ -63,7 +63,7 @@ const NoteView = ({ initialNote, onSave, onClose }: NoteViewProps) => {
                 </Button>
             </div>
             <div className="flex items-center gap-2">
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} className="bg-slate-900 text-white hover:bg-slate-800">
                     <Save className="w-4 h-4 mr-2" />
                     Save & Close
                 </Button>
@@ -78,3 +78,4 @@ const NoteView = ({ initialNote, onSave, onClose }: NoteViewProps) => {
 };
 
 export default NoteView;
+

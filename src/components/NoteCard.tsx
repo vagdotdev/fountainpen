@@ -70,7 +70,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
           {
             'border-slate-200': !isSelected,
             'border-black ring-2 ring-black/10': isSelected && selectedCount === 1,
-            'border-supernote ring-2 ring-supernote/30': isSelected && selectedCount >= 2,
+            'border-supernote-dark ring-2 ring-supernote/30': isSelected && selectedCount >= 2,
             'animate-merge-out': isMerging && isSelected,
           }
         )}
@@ -109,11 +109,14 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
       {/* Selection Indicator */}
       <div className="absolute bottom-4 right-4 pointer-events-none">
         {isSelected ? (
-          <div className="w-5 h-5 flex items-center justify-center bg-blue-500 rounded-full text-white border-2 border-white shadow">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <div className={cn("w-6 h-6 flex items-center justify-center rounded-full text-white border-2 border-white shadow-lg", {
+            'bg-black': selectedCount === 1,
+            'bg-supernote-dark': selectedCount >= 2,
+          })}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           </div>
         ) : (
-          <div className="w-5 h-5 rounded-full border border-slate-300 bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="w-6 h-6 rounded-full border-2 border-slate-300 bg-slate-100 opacity-0 group-hover:opacity-100 transition-opacity" />
         )}
       </div>
 
@@ -162,3 +165,4 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
 };
 
 export default NoteCard;
+
