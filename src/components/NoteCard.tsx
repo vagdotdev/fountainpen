@@ -78,7 +78,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
           background: 'white',
           border: '2px solid transparent',
           backgroundClip: 'padding-box',
-        } : {}}
+        } as React.CSSProperties & { '--gradient-angle': string } : {}}
       >
         {/* Animated border for newly merged supernotes */}
         {isNewlyMerged && (
@@ -91,7 +91,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
               maskComposite: 'xor',
               WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
-            }}
+            } as React.CSSProperties & { '--gradient-angle'?: string }}
           />
         )}
 
