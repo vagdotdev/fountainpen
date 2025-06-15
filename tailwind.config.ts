@@ -22,6 +22,7 @@ export default {
         'times': ['"Times New Roman"', 'Times', 'serif'],
       },
 			colors: {
+				supernote: '#FFB284',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -117,6 +118,10 @@ export default {
             opacity: '0'
           }
         },
+        'subtle-pulse': {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(255, 178, 132, 0.7)' },
+          '70%': { boxShadow: '0 0 0 10px rgba(255, 178, 132, 0)' },
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -124,6 +129,7 @@ export default {
 				'scale-in': 'scale-in 0.2s ease-out',
         'shine': 'shine 2s linear infinite',
         'ping-slow': 'ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'subtle-pulse': 'subtle-pulse 2s infinite',
 			}
 		}
 	},

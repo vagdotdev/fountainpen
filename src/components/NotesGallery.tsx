@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Mic, FileText, Trash2, X, Undo, Sparkles } from 'lucide-react';
 import NoteCard from './NoteCard';
@@ -286,10 +285,9 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
             {selectedNotes.length > 1 && (
                <Button
                 size="sm"
-                className="bg-gradient-to-r from-orange-400 to-orange-500 text-white hover:from-orange-500 hover:to-orange-600 transition-colors rounded-full"
+                className="font-semibold text-white rounded-full bg-gradient-to-r from-supernote to-orange-500 animate-subtle-pulse bg-[length:200%_auto] animate-shine"
                 onClick={handleSuperNote}
               >
-                <Sparkles className="w-4 h-4 mr-1" />
                 Super Note
               </Button>
             )}
