@@ -27,7 +27,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   ]);
   const [deletedFolder, setDeletedFolder] = useState<FolderType | null>(null);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
-  const [mergedNotesInfo, setMergedNotesInfo] = useState<{ superNote: Note, originalNotes: Note[] } | null>(null);
+  const [mergedNotesInfo, setMergedNotesInfo<{ superNote: Note, originalNotes: Note[] } | null>(null);
   const [isMerging, setIsMerging] = useState(false);
   const { toast } = useToast();
 
@@ -164,7 +164,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
 
       const superNote: Note = {
         id: Date.now().toString(),
-        title: `Super Note: ${newTitle}`,
+        title: newTitle,
         summary: newSummary,
         transcript: newTranscript,
         createdAt: new Date(),
@@ -194,6 +194,9 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   const handleNoteClick = (note: Note) => {
     if (selectedNotes.length > 0) {
       return; // Do not open note when in selection mode
+    }
+    if (mergedNotesInfo && mergedNotesInfo.superNote.id === note.id) {
+      setMergedNotesInfo(null);
     }
     setSelectedNote(note);
   };
@@ -267,6 +270,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
                 onSelect={handleToggleSelection}
                 selectedCount={selectedNotes.length}
                 isMerging={isMerging}
+                isNewlyMerged={mergedNotesInfo?.superNote.id === note.id}
               />
             ))}
           </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { format } from 'date-fns';
@@ -16,9 +15,10 @@ interface NoteCardProps {
   onSelect: (noteId: string) => void;
   selectedCount: number;
   isMerging: boolean;
+  isNewlyMerged?: boolean;
 }
 
-const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick, isSelected, onSelect, selectedCount, isMerging }: NoteCardProps) => {
+const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick, isSelected, onSelect, selectedCount, isMerging, isNewlyMerged = false }: NoteCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showMoveMenu, setShowMoveMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -69,9 +69,9 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
           isDragging && 'opacity-50',
           {
             'border-slate-200': !isSelected,
-            'border-black ring-2 ring-black/10': isSelected && selectedCount === 1,
-            'border-supernote-dark ring-2 ring-supernote/30': isSelected && selectedCount >= 2,
+            'border-black ring-2 ring-black/10': isSelected,
             'animate-merge-out': isMerging && isSelected,
+            'animate-subtle-pulse': isNewlyMerged,
           }
         )}
       >
@@ -109,10 +109,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
       {/* Selection Indicator */}
       <div className="absolute bottom-4 right-4 pointer-events-none">
         {isSelected ? (
-          <div className={cn("w-6 h-6 flex items-center justify-center rounded-full text-white border-2 border-white shadow-lg", {
-            'bg-black': selectedCount === 1,
-            'bg-supernote-dark': selectedCount >= 2,
-          })}>
+          <div className="w-6 h-6 flex items-center justify-center rounded-full bg-black text-white border-2 border-white shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           </div>
         ) : (
@@ -165,4 +162,3 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
 };
 
 export default NoteCard;
-
