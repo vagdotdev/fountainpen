@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import MicButton from '../components/MicButton';
 import RecordingCard from '../components/RecordingCard';
 import NotesGallery from '../components/NotesGallery';
@@ -98,7 +98,7 @@ const Index = () => {
               onClick={handleViewNotes}
               className="flex items-center gap-2 px-6 py-3 mt-12 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full transition-all duration-200 transform hover:scale-105"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" />
               View All Notes
             </button>
           </>
