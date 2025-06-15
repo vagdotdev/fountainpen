@@ -75,7 +75,7 @@ const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDia
                     className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
                       isSelected
                         ? isShared
-                          ? 'bg-green-500 text-white'
+                          ? 'text-white bg-[length:200%_auto] bg-gradient-to-r from-green-400 via-green-300 to-green-400 animate-shine'
                           : 'bg-blue-500 text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
@@ -86,7 +86,7 @@ const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDia
                       <div className={`text-sm ${
                         isSelected 
                           ? isShared 
-                            ? 'text-green-100' 
+                            ? 'text-white/80' 
                             : 'text-blue-100'
                           : 'text-slate-500'
                       }`}>
@@ -122,3 +122,4 @@ const CreateFolderDialog = ({ isOpen, onClose, onCreateFolder }: CreateFolderDia
 };
 
 export default CreateFolderDialog;
+

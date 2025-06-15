@@ -58,10 +58,12 @@ const FolderDock = ({ folders, selectedFolder, onFolderSelect, onCreateFolder, o
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, folder.id)}
                 className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all transform hover:scale-105 ${
-                  selectedFolder === folder.id
-                    ? 'bg-blue-500 text-white shadow-md'
-                    : dragOverFolder === folder.id
+                  dragOverFolder === folder.id
                     ? 'bg-green-200 text-green-800 scale-110'
+                    : selectedFolder === folder.id
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : folder.type === 'shared'
+                    ? 'text-white bg-[length:200%_auto] bg-gradient-to-r from-green-400 via-green-300 to-green-400 animate-shine'
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
@@ -117,3 +119,4 @@ const FolderDock = ({ folders, selectedFolder, onFolderSelect, onCreateFolder, o
 };
 
 export default FolderDock;
+
