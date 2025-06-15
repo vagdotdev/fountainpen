@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -111,13 +110,20 @@ export default {
           'to': {
             backgroundPosition: '200% center'
           }
-        }
+        },
+        'ping-slow': {
+          '75%, 100%': {
+            transform: 'scale(1.8)',
+            opacity: '0'
+          }
+        },
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
-        'shine': 'shine 2s linear infinite'
+        'shine': 'shine 2s linear infinite',
+        'ping-slow': 'ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite',
 			}
 		}
 	},

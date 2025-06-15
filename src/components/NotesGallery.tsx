@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Mic, FileText, Trash2, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mic, FileText, Trash2, X, Undo } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
@@ -26,12 +26,26 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
     { id: 'think', name: 'Think', type: 'folder' }
   ]);
   const [deletedFolder, setDeletedFolder] = useState<FolderType | null>(null);
+  const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (deletedNotes.length > 0) {
+      const timer = setTimeout(() => {
+        setDeletedNotes([]);
+      }, 5000); // 5 seconds to undo
+      return () => clearTimeout(timer);
+    }
+  }, [deletedNotes]);
 
   const filteredNotes = notes.filter(note => note.folder === selectedFolder);
 
   const handleDeleteNote = (noteId: string) => {
-    setNotes(prev => prev.filter(note => note.id !== noteId));
+    const noteToDelete = notes.find(n => n.id === noteId);
+    if (noteToDelete) {
+        setNotes(prev => prev.filter(note => note.id !== noteId));
+        setDeletedNotes([noteToDelete]);
+    }
   };
 
   const handleMoveToFolder = (noteId: string, folderId: string) => {
@@ -121,6 +135,11 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
     });
   };
 
+  const handleUndoDeleteNotes = () => {
+    setNotes(prev => [...deletedNotes, ...prev]);
+    setDeletedNotes([]);
+  };
+
   const handleNoteClick = (note: Note) => {
     if (selectedNotes.length > 0) {
       return; // Do not open note when in selection mode
@@ -144,11 +163,11 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   };
 
   const handleDeleteSelected = () => {
-    const count = selectedNotes.length;
-    setNotes(prev => prev.filter(note => !selectedNotes.includes(note.id)));
-    toast({
-        title: `${count} ${count > 1 ? 'notes' : 'note'} deleted.`
-    });
+    const notesToDelete = notes.filter(note => selectedNotes.includes(note.id));
+    if (notesToDelete.length > 0) {
+      setNotes(prev => prev.filter(note => !selectedNotes.includes(note.id)));
+      setDeletedNotes(notesToDelete);
+    }
     setSelectedNotes([]);
   };
 
@@ -239,6 +258,23 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         </div>
       )}
 
+      {/* Undo Delete Notification */}
+      {deletedNotes.length > 0 && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 animate-scale-in">
+          <div className="flex items-center gap-3 bg-slate-800 text-white shadow-xl rounded-full p-2 pl-2 pr-4 border border-slate-700">
+            <button
+              onClick={handleUndoDeleteNotes}
+              className="flex items-center gap-1.5 bg-slate-600 hover:bg-slate-500 rounded-full px-3 py-1 text-sm font-medium transition-colors"
+            >
+              <Undo className="w-3.5 h-3.5" />
+              <span>undo</span>
+            </button>
+            <span className="text-sm text-slate-300">
+              {deletedNotes.length > 1 ? `${deletedNotes.length} notes deleted` : 'note deleted'}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Folder Dock */}
       <FolderDock

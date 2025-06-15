@@ -16,8 +16,8 @@ const MicButton = ({ onStartRecording }: MicButtonProps) => {
       <Mic className="w-8 h-8 text-white mx-auto" />
       
       {/* Pulse animation */}
-      <div className="absolute inset-0 rounded-full border-2 border-blue-400 animate-ping opacity-75" />
-      <div className="absolute inset-2 rounded-full border-2 border-blue-300 animate-ping opacity-50 animation-delay-75" />
+      <div className="absolute inset-0 rounded-full border-2 border-blue-400 animate-ping-slow opacity-75" />
+      <div className="absolute inset-2 rounded-full border-2 border-blue-300 animate-ping-slow opacity-50" style={{ animationDelay: '1s' }}/>
     </button>
   );
 };

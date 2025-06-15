@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MoreVertical, Trash2, Copy } from 'lucide-react';
+import { format } from 'date-fns';
 import { Note, Folder } from '../types/Note';
 
 interface NoteCardProps {
@@ -50,10 +51,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
+    return format(date, 'MMM dd yyyy');
   };
 
   return (
