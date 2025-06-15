@@ -93,10 +93,10 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         </button>
       </div>
 
-      {/* Notes Grid */}
+      {/* Notes Grid - Kanban Style */}
       <div className="px-6">
         {filteredNotes.length > 0 ? (
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {filteredNotes.map((note) => (
               <NoteCard
                 key={note.id}

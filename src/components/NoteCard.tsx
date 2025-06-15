@@ -61,40 +61,44 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onClick={handleClick}
-        className={`flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200 ${
+        className={`bg-white rounded-lg shadow-sm border border-slate-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200 ${
           isDragging ? 'opacity-50' : ''
         }`}
       >
-        {/* App-like Icon - Original Design Restored */}
-        <div className="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center mb-2 group-hover:shadow-xl transition-shadow">
-          {/* Menu Button */}
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <h3 className="text-sm font-semibold text-slate-800 line-clamp-2 leading-tight pr-2">
+            {note.title}
+          </h3>
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            className="p-1 text-slate-400 hover:text-slate-600 transition-colors opacity-0 group-hover:opacity-100"
           >
-            <MoreVertical className="w-3 h-3 text-slate-600" />
+            <MoreVertical className="w-4 h-4" />
           </button>
-
-          {/* Date Badge */}
-          <div className="absolute -bottom-1 -right-1 bg-white text-xs text-slate-600 px-1.5 py-0.5 rounded-full shadow-sm">
-            {formatDate(note.createdAt)}
-          </div>
         </div>
 
-        {/* Title */}
-        <div className="text-center max-w-20">
-          <h3 className="text-sm font-medium text-slate-800 line-clamp-2 leading-tight">
-            {note.title}
-          </h3>
+        {/* Content */}
+        <div className="mb-3">
+          <p className="text-xs text-slate-600 line-clamp-4 leading-relaxed">
+            {note.summary}
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-400">
+            {formatDate(note.createdAt)}
+          </span>
         </div>
       </div>
 
       {/* Context Menu */}
       {showMenu && (
-        <div className="absolute top-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[160px]">
+        <div className="absolute top-8 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[160px]">
           <button
             onClick={handleCopy}
             className="flex items-center gap-2 w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-50 first:rounded-t-lg"
