@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Mic, FileText, Trash2, X, Undo, Sparkles } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
+import NoteView from './NoteView';
 import { Note, Folder as FolderType } from '../types/Note';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,7 @@ interface NotesGalleryProps {
 const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) => {
   const [selectedFolder, setSelectedFolder] = useState('library');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [folders, setFolders] = useState<FolderType[]>([
     { id: 'library', name: 'Library', type: 'folder' },
@@ -189,29 +191,26 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
 
     setMergedNotesInfo(null);
   };
+
+  const handleNoteClick = (note: Note) => {
+    if (selectedNotes.length > 0) {
+      return; // Do not open note when in selection mode
+    }
+    if (mergedNotesInfo && mergedNotesInfo.superNote.id === note.id) {
+      setMergedNotesInfo(null);
+    }
+    setSelectedNote(note);
+  };
   
   const handleToggleSelection = (noteId: string) => {
+    if (selectedNote) {
+      handleCloseNoteView();
+    }
     setSelectedNotes(prev =>
       prev.includes(noteId)
         ? prev.filter(id => id !== noteId)
         : [...prev, noteId]
     );
-  };
-
-  const handleCardClick = (note: Note) => {
-    if (selectedNotes.length > 0 && !selectedNotes.includes(note.id)) {
-      handleToggleSelection(note.id);
-      return;
-    }
-    if (selectedNotes.length > 0 && selectedNotes.includes(note.id)) {
-      handleToggleSelection(note.id);
-      return;
-    }
-
-    if (mergedNotesInfo && mergedNotesInfo.superNote.id === note.id) {
-      setMergedNotesInfo(null);
-    }
-    setExpandedNoteId(prev => (prev === note.id ? null : note.id));
   };
 
   const handleClearSelection = () => {
@@ -221,13 +220,23 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   const handleDeleteSelected = () => {
     const notesToDelete = notes.filter(note => selectedNotes.includes(note.id));
     if (notesToDelete.length > 0) {
-    setNotes(prev => prev.filter(note => !selectedNotes.includes(note.id)));
-    setDeletedNotes(notesToDelete);
+      setNotes(prev => prev.filter(note => !selectedNotes.includes(note.id)));
+      setDeletedNotes(notesToDelete);
     }
     setSelectedNotes([]);
   };
 
-  const expandedNote = notes.find(note => note.id === expandedNoteId);
+  const handleCloseNoteView = () => {
+    setSelectedNote(null);
+  };
+
+  const handleSaveNote = (updatedNote: Note) => {
+    setNotes(prev => prev.map(note => 
+      note.id === updatedNote.id ? updatedNote : note
+    ));
+    setSelectedNote(null);
+    toast({ title: "Note saved!" });
+  };
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-slate-50 to-slate-100 pb-24">
@@ -257,11 +266,12 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
                 onDelete={handleDeleteNote}
                 onMoveToFolder={handleMoveToFolder}
                 onDragStart={handleDragStart}
-                onClick={() => handleCardClick(note)}
+                onNoteClick={handleNoteClick}
                 isSelected={selectedNotes.includes(note.id)}
+                onSelect={handleToggleSelection}
+                selectedCount={selectedNotes.length}
                 isMerging={isMerging}
                 isNewlyMerged={mergedNotesInfo?.superNote.id === note.id}
-                isExpanded={expandedNoteId === note.id}
               />
             ))}
           </div>
@@ -288,7 +298,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
             {selectedNotes.length > 1 && (
                <Button
                 size="sm"
-                className="font-semibold text-white rounded-full bg-gradient-to-r from-supernote to-orange-500 bg-[length:200%_auto] animate-shine"
+                className="font-semibold text-white rounded-full bg-gradient-to-r from-supernote to-orange-500 animate-subtle-pulse bg-[length:200%_auto] animate-shine"
                 onClick={handleSuperNote}
                 disabled={isMerging}
               >
@@ -369,25 +379,13 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
         onCreateFolder={handleCreateFolder}
       />
 
-      {/* Expanded Note Overlay */}
-      {expandedNote && (
-        <>
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30" onClick={() => setExpandedNoteId(null)} />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 w-full max-w-2xl px-4">
-             <NoteCard
-                note={expandedNote}
-                folders={folders}
-                onDelete={handleDeleteNote}
-                onMoveToFolder={handleMoveToFolder}
-                onDragStart={() => {}}
-                onClick={() => setExpandedNoteId(null)}
-                isSelected={false}
-                isMerging={false}
-                isNewlyMerged={false}
-                isExpanded={true}
-              />
-          </div>
-        </>
+      {/* Note View */}
+      {selectedNote && (
+        <NoteView
+          initialNote={selectedNote}
+          onSave={handleSaveNote}
+          onClose={handleCloseNoteView}
+        />
       )}
     </div>
   );
