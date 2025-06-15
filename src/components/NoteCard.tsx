@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { Note, Folder } from '../types/Note';
@@ -10,9 +9,11 @@ interface NoteCardProps {
   onMoveToFolder: (noteId: string, folderId: string) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
   onNoteClick: (note: Note) => void;
+  isSelected: boolean;
+  onSelect: (noteId: string) => void;
 }
 
-const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick }: NoteCardProps) => {
+const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick, isSelected, onSelect }: NoteCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showMoveMenu, setShowMoveMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -43,7 +44,8 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
     setIsDragging(false);
   };
 
-  const handleClick = () => {
+  const handleViewNote = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onNoteClick(note);
   };
 
@@ -55,18 +57,17 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group" onClick={() => onSelect(note.id)}>
       <div
         draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        onClick={handleClick}
-        className={`bg-white rounded-2xl shadow-sm border border-slate-200 p-5 cursor-pointer hover:shadow-lg transition-all duration-200 h-64 flex flex-col ${
+        className={`bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-lg transition-all duration-200 h-64 flex flex-col ${
           isDragging ? 'opacity-50' : ''
-        }`}
+        } ${isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-200'}`}
       >
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        <div onClick={handleViewNote} className="flex items-start justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-800 line-clamp-3 leading-tight pr-2 flex-1">
             {note.title}
           </h3>
@@ -82,7 +83,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
         </div>
 
         {/* Content */}
-        <div className="flex-1 mb-4">
+        <div onClick={handleViewNote} className="flex-1 mb-4">
           <p className="text-xs text-slate-600 line-clamp-6 leading-relaxed">
             {note.summary}
           </p>
@@ -94,6 +95,17 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
             {formatDate(note.createdAt)}
           </span>
         </div>
+      </div>
+
+      {/* Selection Indicator */}
+      <div className="absolute bottom-4 right-4 pointer-events-none">
+        {isSelected ? (
+          <div className="w-5 h-5 flex items-center justify-center bg-blue-500 rounded-full text-white border-2 border-white shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+        ) : (
+          <div className="w-5 h-5 rounded-full border border-slate-300 bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+        )}
       </div>
 
       {/* Context Menu */}

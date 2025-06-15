@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
-import { Mic, FileText } from 'lucide-react';
+import { Mic, FileText, Trash2, X } from 'lucide-react';
 import NoteCard from './NoteCard';
 import FolderDock from './FolderDock';
 import CreateFolderDialog from './CreateFolderDialog';
 import RecordingCard from './RecordingCard';
 import { Note, Folder as FolderType } from '../types/Note';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 interface NotesGalleryProps {
   notes: Note[];
@@ -18,6 +18,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   const [selectedFolder, setSelectedFolder] = useState('library');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [folders, setFolders] = useState<FolderType[]>([
     { id: 'library', name: 'Library', type: 'folder' },
     { id: 'walkins', name: 'Walkins', type: 'folder' },
@@ -121,7 +122,34 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   };
 
   const handleNoteClick = (note: Note) => {
+    if (selectedNotes.length > 0) {
+      return; // Do not open note when in selection mode
+    }
     setSelectedNote(note);
+  };
+  
+  const handleToggleSelection = (noteId: string) => {
+    if (selectedNote) {
+      handleCloseNoteView();
+    }
+    setSelectedNotes(prev =>
+      prev.includes(noteId)
+        ? prev.filter(id => id !== noteId)
+        : [...prev, noteId]
+    );
+  };
+
+  const handleClearSelection = () => {
+    setSelectedNotes([]);
+  };
+
+  const handleDeleteSelected = () => {
+    const count = selectedNotes.length;
+    setNotes(prev => prev.filter(note => !selectedNotes.includes(note.id)));
+    toast({
+        title: `${count} ${count > 1 ? 'notes' : 'note'} deleted.`
+    });
+    setSelectedNotes([]);
   };
 
   const handleCloseNoteView = () => {
@@ -159,7 +187,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
       </div>
 
       {/* Notes Grid - Kanban Style */}
-      <div className="px-6">
+      <div className="px-6 pb-40">
         {filteredNotes.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {filteredNotes.map((note) => (
@@ -171,6 +199,8 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
                 onMoveToFolder={handleMoveToFolder}
                 onDragStart={handleDragStart}
                 onNoteClick={handleNoteClick}
+                isSelected={selectedNotes.includes(note.id)}
+                onSelect={handleToggleSelection}
               />
             ))}
           </div>
@@ -188,6 +218,33 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
           </div>
         )}
       </div>
+      
+      {/* Selection Action Bar */}
+      {selectedNotes.length > 0 && (
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 animate-scale-in">
+          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm shadow-xl rounded-full p-2 border border-border">
+            <span className="text-sm font-medium text-foreground px-3">{selectedNotes.length} selected</span>
+            <Button
+              size="sm"
+              className="bg-slate-800 text-white hover:bg-slate-700 rounded-full"
+              onClick={handleDeleteSelected}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-full"
+              onClick={handleClearSelection}
+            >
+              <X className="w-4 h-4 mr-2" />
+              Clear
+            </Button>
+          </div>
+        </div>
+      )}
+
 
       {/* Folder Dock */}
       <FolderDock
