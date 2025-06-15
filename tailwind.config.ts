@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -120,7 +121,13 @@ export default {
         },
         'subtle-pulse': {
           '0%, 100%': { boxShadow: '0 0 0 0 rgba(255, 178, 132, 0.7)' },
-          '70%': { boxShadow: '0 0 0 10px rgba(255, 178, 132, 0)' },
+          '70%': { boxShadow: '0 0 0 8px rgba(255, 178, 132, 0)' },
+        },
+        'merge-out': {
+          'to': {
+            opacity: '0',
+            transform: 'scale(0.5) translateY(-20px)',
+          }
         }
 			},
 			animation: {
@@ -130,6 +137,7 @@ export default {
         'shine': 'shine 2s linear infinite',
         'ping-slow': 'ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'subtle-pulse': 'subtle-pulse 2s infinite',
+        'merge-out': 'merge-out 0.5s ease-in forwards',
 			}
 		}
 	},

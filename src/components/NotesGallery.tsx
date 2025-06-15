@@ -28,6 +28,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
   const [deletedFolder, setDeletedFolder] = useState<FolderType | null>(null);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
   const [mergedNotesInfo, setMergedNotesInfo] = useState<{ superNote: Note, originalNotes: Note[] } | null>(null);
+  const [isMerging, setIsMerging] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -152,24 +153,29 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
 
   const handleSuperNote = () => {
     const notesToMerge = notes.filter(note => selectedNotes.includes(note.id));
-    if (notesToMerge.length < 2) return;
+    if (notesToMerge.length < 2 || isMerging) return;
 
-    const newTitle = notesToMerge.map(n => n.title).join(' & ');
-    const newSummary = notesToMerge.map(n => n.summary).join('\n\n---\n\n');
-    const newTranscript = notesToMerge.map(n => n.transcript).join('\n\n---\n\n');
+    setIsMerging(true);
 
-    const superNote: Note = {
-      id: Date.now().toString(),
-      title: `Super Note: ${newTitle}`,
-      summary: newSummary,
-      transcript: newTranscript,
-      createdAt: new Date(),
-      folder: selectedFolder,
-    };
+    setTimeout(() => {
+      const newTitle = notesToMerge.map(n => n.title).join(' & ');
+      const newSummary = notesToMerge.map(n => n.summary).join('\n\n---\n\n');
+      const newTranscript = notesToMerge.map(n => n.transcript).join('\n\n---\n\n');
 
-    setNotes(prev => [superNote, ...prev.filter(note => !selectedNotes.includes(note.id))]);
-    setMergedNotesInfo({ superNote, originalNotes: notesToMerge });
-    setSelectedNotes([]);
+      const superNote: Note = {
+        id: Date.now().toString(),
+        title: `Super Note: ${newTitle}`,
+        summary: newSummary,
+        transcript: newTranscript,
+        createdAt: new Date(),
+        folder: selectedFolder,
+      };
+
+      setNotes(prev => [superNote, ...prev.filter(note => !selectedNotes.includes(note.id))]);
+      setMergedNotesInfo({ superNote, originalNotes: notesToMerge });
+      setSelectedNotes([]);
+      setIsMerging(false);
+    }, 500); // Animation duration
   };
 
   const handleUndoSuperNote = () => {
@@ -259,6 +265,8 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
                 onNoteClick={handleNoteClick}
                 isSelected={selectedNotes.includes(note.id)}
                 onSelect={handleToggleSelection}
+                selectedCount={selectedNotes.length}
+                isMerging={isMerging}
               />
             ))}
           </div>
@@ -278,7 +286,7 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
       </div>
       
       {/* Selection Action Bar */}
-      {selectedNotes.length > 0 && (
+      {selectedNotes.length > 0 && !isMerging && (
         <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 animate-scale-in">
           <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm shadow-xl rounded-full p-2 border border-border">
             <span className="text-sm font-medium text-foreground px-3">{selectedNotes.length} selected</span>
@@ -287,8 +295,9 @@ const NotesGallery = ({ notes, setNotes, onStartRecording }: NotesGalleryProps) 
                 size="sm"
                 className="font-semibold text-white rounded-full bg-gradient-to-r from-supernote to-orange-500 animate-subtle-pulse bg-[length:200%_auto] animate-shine"
                 onClick={handleSuperNote}
+                disabled={isMerging}
               >
-                Super Note
+                supernote
               </Button>
             )}
             <Button

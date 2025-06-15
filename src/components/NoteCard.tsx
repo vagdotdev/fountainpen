@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { format } from 'date-fns';
 import { Note, Folder } from '../types/Note';
+import { cn } from '@/lib/utils';
 
 interface NoteCardProps {
   note: Note;
@@ -12,9 +14,11 @@ interface NoteCardProps {
   onNoteClick: (note: Note) => void;
   isSelected: boolean;
   onSelect: (noteId: string) => void;
+  selectedCount: number;
+  isMerging: boolean;
 }
 
-const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick, isSelected, onSelect }: NoteCardProps) => {
+const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNoteClick, isSelected, onSelect, selectedCount, isMerging }: NoteCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showMoveMenu, setShowMoveMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -60,9 +64,16 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
         draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        className={`bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-lg transition-all duration-200 h-64 flex flex-col ${
-          isDragging ? 'opacity-50' : ''
-        } ${isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-200'}`}
+        className={cn(
+          'bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-lg transition-all duration-200 h-64 flex flex-col',
+          isDragging && 'opacity-50',
+          {
+            'border-slate-200': !isSelected,
+            'border-black ring-2 ring-black/10': isSelected && selectedCount === 1,
+            'border-supernote ring-2 ring-supernote/30': isSelected && selectedCount >= 2,
+            'animate-merge-out': isMerging && isSelected,
+          }
+        )}
       >
         {/* Header */}
         <div onClick={handleViewNote} className="flex items-start justify-between mb-4">
