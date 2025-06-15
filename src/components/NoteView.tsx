@@ -4,7 +4,7 @@ import { Note } from '../types/Note';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Save, Undo, Copy } from 'lucide-react';
+import { X, Save, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface NoteViewProps {
@@ -16,11 +16,6 @@ interface NoteViewProps {
 const NoteView = ({ initialNote, onSave, onClose }: NoteViewProps) => {
   const [editedNote, setEditedNote] = useState<Note>(initialNote);
   const { toast } = useToast();
-
-  const handleReset = () => {
-    setEditedNote(initialNote);
-    toast({ title: "Note content has been reset." });
-  };
 
   const handleSave = () => {
     onSave(editedNote);
@@ -51,23 +46,15 @@ const NoteView = ({ initialNote, onSave, onClose }: NoteViewProps) => {
             style={{minHeight: '200px'}}
           />
         </div>
-        <div className="p-4 bg-slate-50 border-t rounded-b-2xl flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-600">
-                    <Undo className="w-4 h-4 mr-2" />
-                    Reset
-                </Button>
-                <Button variant="ghost" size="sm" onClick={handleCopySummary} className="text-slate-600">
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy
-                </Button>
-            </div>
-            <div className="flex items-center gap-2">
-                <Button onClick={handleSave} className="bg-slate-900 text-white hover:bg-slate-800">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save & Close
-                </Button>
-            </div>
+        <div className="p-4 border-t flex items-center justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={handleCopySummary} className="text-slate-600">
+                <Copy className="w-4 h-4 mr-2" />
+                Copy
+            </Button>
+            <Button onClick={handleSave} className="bg-slate-900 text-white hover:bg-slate-800">
+                <Save className="w-4 h-4 mr-2" />
+                Save & Close
+            </Button>
         </div>
         <button onClick={onClose} className="absolute top-3 right-3 p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
             <X className="w-5 h-5" />
@@ -78,4 +65,3 @@ const NoteView = ({ initialNote, onSave, onClose }: NoteViewProps) => {
 };
 
 export default NoteView;
-

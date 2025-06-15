@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MoreVertical, Trash2, Copy } from 'lucide-react';
 import { format } from 'date-fns';
@@ -71,7 +72,7 @@ const NoteCard = ({ note, folders, onDelete, onMoveToFolder, onDragStart, onNote
             'border-slate-200': !isSelected,
             'border-black ring-2 ring-black/10': isSelected,
             'animate-merge-out': isMerging && isSelected,
-            'animate-subtle-pulse': isNewlyMerged,
+            'animate-calm-glow': isNewlyMerged,
           }
         )}
       >
